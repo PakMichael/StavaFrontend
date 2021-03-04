@@ -5,7 +5,11 @@ Vue.use(Vuex)
 const state = {
   modal_active: false,
   modal_message: '',
-  modal_callbacks: {}
+  modal_callbacks: {},
+  markers:[
+    ["-84.754482", "18.11"],
+    ["50.2", "18.3"],
+  ]
 }
 
 const mutations = {

@@ -5,7 +5,7 @@
       <b-list-group class="list">
         <b-list-group-item
           class="d-flex justify-content-start align-items-center"
-          v-for="(item, index) in dif_text"
+          v-for="(item, index) in this.$store.state.markers"
           :key="item[0]"
           button
           @click="activateModal"
@@ -42,15 +42,13 @@
 export default {
   data: () => {
     return {
-      dif_text: [
-        ["-84.754482", "18.1"],
-        ["50.2", "18.3"],
-      ],
+      
     };
   },
 
   methods: {
     activateModal() {
+      this.$emit('pointsChanged')
       this.$store.commit("modal", [
         true,
         ``,
