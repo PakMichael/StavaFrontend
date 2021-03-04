@@ -6,10 +6,11 @@ const state = {
   modal_active: false,
   modal_message: '',
   modal_callbacks: {},
-  markers:[
+  markers: [
     ["-84.754482", "18.11"],
     ["50.2", "18.3"],
-  ]
+  ],
+  center: ["50.2", "18.3"]
 }
 
 const mutations = {

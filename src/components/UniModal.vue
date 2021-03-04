@@ -3,8 +3,19 @@
     <div id="modal-window">
       <b-card title="Remove point?" style="max-width: 20rem" class="mb-2">
         <div class="modal-btns">
-          <b-button href="#" variant="primary" @click="hideModal">Close</b-button>
-          <b-button href="#" variant="danger">Yes</b-button>
+          <b-button href="#" variant="primary" @click="hideModal"
+            >Close</b-button
+          >
+
+          <b-button
+            v-for="(option, name) in this.$store.state.modal_callbacks"
+            :key="name"
+            @click="option"
+            class="button small"
+            variant="danger"
+          >
+            {{ name }}
+          </b-button>
         </div>
       </b-card>
     </div>
@@ -13,17 +24,11 @@
 
 <script>
 export default {
-
-methods:{
-  hideModal(){
-      this.$store.commit("modal", [
-        false,
-        ``,
-        {},
-      ]);
-  }
-}
-
+  methods: {
+    hideModal() {
+      this.$store.commit("modal", [false, ``, {}]);
+    },
+  },
 };
 </script>
 
@@ -36,7 +41,7 @@ methods:{
   display: flex;
   justify-content: center;
   align-items: center;
-    background-color: rgba(1,1,1,0.3);
+  background-color: rgba(1, 1, 1, 0.3);
 }
 
 #modal-window {
@@ -45,7 +50,7 @@ methods:{
 
   z-index: 20000000;
 }
-.modal-btns{
+.modal-btns {
   display: flex;
   justify-content: space-around;
 }

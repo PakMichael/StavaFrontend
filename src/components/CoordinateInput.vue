@@ -8,12 +8,16 @@
           v-for="(item, index) in this.$store.state.markers"
           :key="item[0]"
           button
-          @click="activateModal"
+          @click="changePointOfView(item)"
         >
           <div class="index">{{ index + 1 }})</div>
 
           <b-badge variant="primary" pill> {{ item[0] }}</b-badge>
           <b-badge variant="primary" pill> {{ item[1] }}</b-badge>
+
+          <div class="clickable" @click="activateModal(item)">
+            <i class="fas fa-trash-alt"></i>
+          </div>
         </b-list-group-item>
       </b-list-group>
     </div>
@@ -41,18 +45,30 @@
 <script>
 export default {
   data: () => {
-    return {
-      
-    };
+    return {};
   },
 
   methods: {
-    activateModal() {
-      this.$emit('pointsChanged')
+    changePointOfView(item) {
+      this.$store.commit("set", ["center", item]);
+       this.$emit("centerChanged");
+    },
+    activateModal(item) {
       this.$store.commit("modal", [
         true,
         ``,
-        {},
+        {
+          remove: () => {
+            let fil = this.$store.state.markers.filter((marker) => {
+              if (item !== marker) {
+                return marker;
+              }
+            });
+            this.$store.commit("set", ["markers", fil]);
+            this.$store.commit("modal", [false, ``, {}]);
+            this.$emit("pointsChanged");
+          },
+        },
       ]);
     },
   },
@@ -87,5 +103,9 @@ export default {
 }
 .index {
   margin-right: 10px;
+}
+
+.clickable:hover {
+  background-color: lightcyan;
 }
 </style>

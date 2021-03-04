@@ -15,7 +15,10 @@
         </div>
       </div>
       <div id="right-pane">
-        <CoordinateInput v-on:pointsChanged="setMarkers"/>
+        <CoordinateInput
+          v-on:pointsChanged="setMarkers"
+          v-on:centerChanged="setCenter"
+        />
       </div>
     </div>
   </div>
@@ -35,6 +38,9 @@ export default {
   },
 
   methods: {
+    setCenter() {
+      this.mainMap.setView(this.$store.state.center, 13);
+    },
     setMarkers() {
       this.$store.state.markers.forEach((marker) => {
         L.circle(marker, {
@@ -61,6 +67,8 @@ export default {
             "pk.eyJ1IjoibWlzaGFwYWsiLCJhIjoiY2tsdmdlZDUwMGU4ajJ2bXdndjU2ZHR1MSJ9.X2dJapVN4pJQ0NslIxvb9g",
         }
       ).addTo(this.mainMap);
+      this.setMarkers()
+      this.setCenter();
     },
   },
   mounted() {
