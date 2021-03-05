@@ -26,15 +26,24 @@
       <div>
         <b-input-group class="mb-2">
           <b-form-input
-            aria-label="Latitude"
-            placeholder="Latitude"
-          ></b-form-input>
-          <b-form-input
             aria-label="Longtitude"
             placeholder="Longtitude"
+            v-model="longtitude"
           ></b-form-input>
+          <b-form-input
+            aria-label="Latitude"
+            placeholder="Latitude"
+            v-model="latitude"
+          ></b-form-input>
+
           <b-input-group-append>
-            <b-button size="sm" text="Button" variant="success">+</b-button>
+            <b-button
+              size="sm"
+              text="Button"
+              variant="success"
+              @click="addPoint"
+              >+</b-button
+            >
           </b-input-group-append>
         </b-input-group>
       </div>
@@ -45,15 +54,30 @@
 <script>
 export default {
   data: () => {
-    return {};
+    return {
+      longtitude: undefined,
+      latitude: undefined,
+    };
   },
 
   methods: {
+    addPoint() {
+      let current_points = this.$store.state.markers;
+
+      if (current_points.length >= 50) {
+        alert("Max number of points (50) is reached");
+        return;
+      }
+      current_points.push([this.longtitude, this.latitude]);
+      this.$store.commit("set", ["markers", current_points]);
+      this.$emit("pointsChanged");
+    },
     changePointOfView(item) {
       this.$store.commit("set", ["center", item]);
-       this.$emit("centerChanged");
+      this.$emit("centerChanged");
     },
     activateModal(item) {
+      console.log('dasdas',this.$store.state.markers)
       this.$store.commit("modal", [
         true,
         ``,
@@ -86,7 +110,7 @@ export default {
 }
 
 .list {
-  overflow-y: visible;
+  overflow-y: auto;
   max-height: 400px;
   min-height: 400px;
 }

@@ -8,10 +8,21 @@
     </div>
     <div id="main-section">
       <div id="left-pane">
-        <div>Total Distance: 0</div>
+        <div>Total Distance: {{ total_distance }} [m]</div>
+        <div>Time calculated: {{ time_calculated }} [s]</div>
         <div id="mapid"></div>
-        <div>
-          <b-button disabled variant="danger">Calculate distance</b-button>
+        <div class="footer-btn">
+          <b-form-input
+            aria-label="REQUEST_ID"
+            placeholder="REQUEST_ID"
+            v-model="REQUEST_ID"
+          ></b-form-input>
+          <b-button
+            :disabled="!(this.$store.state.markers.length > 0)"
+            variant="danger"
+            @click="submitPoints"
+            >Calculate distance</b-button
+          >
         </div>
       </div>
       <div id="right-pane">
@@ -28,16 +39,62 @@
 import CoordinateInput from "../components/CoordinateInput";
 import UniModal from "../components/UniModal";
 import L from "leaflet";
+import axios from "axios";
 
 export default {
   components: { CoordinateInput, UniModal },
   data: () => {
     return {
       mainMap: undefined,
+      REQUEST_ID: undefined,
+      total_distance: undefined,
+      time_calculated: undefined,
     };
   },
 
   methods: {
+    getValidPoints() {
+      let markers = this.$store.state.markers;
+      let points = [];
+
+      markers.forEach((item) => {
+        points.push(`${item[0]},${item[1]}`);
+      });
+
+      let finalPoints = [];
+
+      for (var a = 1; a < points.length; a++) {
+        finalPoints.push([points[a - 1], points[a]]);
+      }
+
+      return JSON.stringify(finalPoints);
+    },
+
+    submitPoints() {
+      this.getValidPoints();
+      let headers = {
+        "Content-Type": "application/json",
+      };
+
+      let config = { headers };
+      axios
+        .post(
+          `//${process.env.VUE_APP_ENDPOINT_HOST}/api/mapper`,
+          { distance: this.getValidPoints(), REQUEST_ID: this.REQUEST_ID },
+          config
+        )
+        .then((value) => {
+          console.log(value, value.data["Execution Time"]);
+          this.total_distance = value.data.Distance;
+          this.time_calculated = value.data["Execution Time"];
+        })
+        .catch((err) => {
+          console.log(err);
+          alert(err);
+
+          alert(JSON.stringify(err.response.data));
+        });
+    },
     setCenter() {
       this.mainMap.setView(this.$store.state.center, 13);
     },
@@ -67,7 +124,7 @@ export default {
             "pk.eyJ1IjoibWlzaGFwYWsiLCJhIjoiY2tsdmdlZDUwMGU4ajJ2bXdndjU2ZHR1MSJ9.X2dJapVN4pJQ0NslIxvb9g",
         }
       ).addTo(this.mainMap);
-      this.setMarkers()
+      this.setMarkers();
       this.setCenter();
     },
   },
@@ -79,6 +136,11 @@ export default {
 
 <style>
 @import url("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css");
+
+.footer-btn {
+  display: flex;
+  max-height: 35px;
+}
 #mapid {
   height: 180px;
 }
